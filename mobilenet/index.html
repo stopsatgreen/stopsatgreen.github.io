@@ -6,6 +6,7 @@
     <title></title>
     <style>
     #preview {
+      background-color: #cdcdcd;
       height: 50vh;
       display: flex;
       align-items: center;
@@ -22,6 +23,7 @@
   <body>
     <input type="file" accept=".jpg, .jpeg" id="sourcefile" />
     <div id="preview"></div>
+    <p id="feedback">Waiting for input…</p>
     <!-- <img src="/assets/grey-cat.jpg" id="source" /> -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.12.0"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@0.2.2"></script>
@@ -29,6 +31,7 @@
     // const img = document.getElementById('source');
     // img.crossOrigin = 'anonymous';
     const sourceFile = document.getElementById('sourcefile');
+    const feedbackEl = document.getElementById('feedback');
     sourceFile.addEventListener('change', (event) => {
       let files = event.target.files;
       console.log(files[0]);
@@ -38,21 +41,10 @@
         img.src = reader.result;
         document.getElementById('preview').appendChild(img);
         classifyImg(img);
+        feedbackEl.textContent = 'Thinking…';
       };
       reader.readAsDataURL(files[0]);
     });
-
-    function showPredictions(predictionArray) {
-      let predictionList = document.createElement('p');
-      predictionList.textContent = `I think that’s a ${predictionArray[0]}. I mean, it could be a ${predictionArray[1]}, and there’s even a chance it’s a ${predictionArray[2]}.`;
-      // let predictionList = document.createElement('ol');
-      // predictionArray.forEach((result) => {
-      //   let predictionListItem = document.createElement('li');
-      //   predictionListItem.textContent = result;
-      //   predictionList.appendChild(predictionListItem);
-      // });
-      document.body.appendChild(predictionList);
-    }
 
     function classifyImg(imgData) {
       mobilenet.load().then((model) => {
@@ -63,7 +55,7 @@
             predictionArray.push(itemClass);
           });
           console.log('Predictions:', predictionArray);
-          showPredictions(predictionArray);
+          feedbackEl.textContent = `My best guess: ${predictionArray[0]}. Failing that, I’m going to say ${predictionArray[1]}, or ${predictionArray[2]}.`;
         });
       });
     }
