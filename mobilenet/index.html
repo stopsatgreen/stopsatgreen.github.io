@@ -32,6 +32,7 @@
     // img.crossOrigin = 'anonymous';
     const sourceFile = document.getElementById('sourcefile');
     const feedbackEl = document.getElementById('feedback');
+    const previewEl = document.getElementById('preview');
     sourceFile.addEventListener('change', (event) => {
       let files = event.target.files;
       console.log(files[0]);
@@ -39,7 +40,11 @@
       reader.onload = function() {
         let img = new Image();
         img.src = reader.result;
-        document.getElementById('preview').appendChild(img);
+        console.log('HAS NODES?', previewEl.hasChildNodes());
+        while (previewEl.hasChildNodes()) {
+          previewEl.removeChild(previewEl.lastChild);
+        }
+        previewEl.appendChild(img);
         classifyImg(img);
         feedbackEl.textContent = 'Thinking…';
       };
